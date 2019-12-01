@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour {
 
     public Camera playerCamera;
     private Transform cameraAnchor;
+    private Quaternion cameraAnchorRotationOffset = Quaternion.identity;
 
 
     public MovementSettings movementSettings;
@@ -20,6 +21,7 @@ public class PlayerMovement : MonoBehaviour {
     private float sidewaysInput;
     private Vector2 turnInput;    
     private float jumpInput;
+    private bool dashInput;
 
     private void Awake() {
         velocity = Vector3.zero;
@@ -39,17 +41,21 @@ public class PlayerMovement : MonoBehaviour {
 
     void Start() {
         Cursor.lockState = CursorLockMode.Locked;
+        cameraAnchorRotationOffset = transform.rotation;
     }
 
     void Update() {
         GetInput();
         Turn();
+
         UpdateCameraAnchor();
     }
 
     void FixedUpdate() {
-        Move();
-        Jump();
+        if (Dash() == false) {
+            Move();
+            Jump();
+        }
     }
 
     void GetInput() {
@@ -58,9 +64,10 @@ public class PlayerMovement : MonoBehaviour {
         if (inputSettings.SIDEWAYS_AXIS.Length != 0) sidewaysInput = Input.GetAxis(inputSettings.SIDEWAYS_AXIS);
 
         if (inputSettings.TURN_AXIS_X.Length != 0) turnInput.x = Input.GetAxis(inputSettings.TURN_AXIS_X);
-        //if (inputSettings.TURN_AXIS_Y.Length != 0) turnInput.y = Input.GetAxis(inputSettings.TURN_AXIS_Y);
+        if (inputSettings.TURN_AXIS_Y.Length != 0) turnInput.y = -Input.GetAxis(inputSettings.TURN_AXIS_Y);
 
         if (inputSettings.JUMP_AXIS.Length != 0) jumpInput = Input.GetAxisRaw(inputSettings.JUMP_AXIS);
+        if (Input.GetKeyDown(KeyCode.LeftShift)) dashInput = true;
     }
 
     void Move() {
@@ -72,39 +79,40 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     void Turn() {
-        if (turnInput.x != 0f || turnInput.y != 0f) {
+        if (turnInput.x != 0f) {
             targetRotation *= Quaternion.AngleAxis(movementSettings.rotateVelocity * turnInput.x * Time.deltaTime, Vector3.up);
-            //targetRotation *= Quaternion.AngleAxis(movementSettings.rotateVelocity * turnInput.y * Time.deltaTime, Vector3.right);
         }
         transform.rotation = targetRotation;
+
+        if (turnInput.y != 0f) {
+            cameraAnchorRotationOffset *= Quaternion.AngleAxis(movementSettings.rotateVelocity * turnInput.y * Time.deltaTime, Vector3.right);
+        }
     }
 
     void UpdateCameraAnchor() {
-        cameraAnchor.SetPositionAndRotation(transform.position, transform.rotation);
+
+        cameraAnchor.SetPositionAndRotation(transform.position, transform.rotation * cameraAnchorRotationOffset);
     }
 
     void Jump() {
         bool _isGrounded = IsGrounded();
 
+        // if jump is pressed player is on ground
         if (jumpInput != 0f && _isGrounded) {
             playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, movementSettings.jumpVelocity, playerRigidbody.velocity.z);
         }
-
-        
-        // this means falling
-        //if (playerRigidbody.velocity.y < 0) {
-        //    playerRigidbody.AddForce(-transform.up * movementSettings.additionalFallingForce);
-        //}
         
         // this is still jumping but if jumping is not pressed add lowjumpForce
         if (jumpInput == 0 && IsGrounded() == false && !(playerRigidbody.velocity.y < 0)) {
-            playerRigidbody.AddForce(-transform.up * movementSettings.lowjumpForce);
+            // playerRigidbody.AddForce(-transform.up * movementSettings.lowjumpForce);
+            playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, playerRigidbody.velocity.y * movementSettings.lowJumpMultiplier, playerRigidbody.velocity.z);
         }
         
-
+        // this is basicially additional gravity
         if (_isGrounded == false) {
             playerRigidbody.AddForce(-transform.up * movementSettings.additionalFallingForce);
         }
+
 
         if (_isGrounded == true) {
             movementSettings.jumpingMovementSpeed = 1;
@@ -116,13 +124,45 @@ public class PlayerMovement : MonoBehaviour {
 
     bool IsGrounded() {
 
-        RaycastHit hitInfo;
+        //RaycastHit hitInfo;
 
-        float sphereRadius = ((transform.lossyScale.x + transform.lossyScale.z) / 2) * 0.9f;
-        bool hit = Physics.SphereCast(transform.position, sphereRadius, -transform.up, out hitInfo, movementSettings.distanceToGround, movementSettings.ground);
+        float avgSize = ((transform.lossyScale.x + transform.lossyScale.z) / 2) * 0.9f;
+        
+        //bool hit = Physics.SphereCast(transform.position, avgSize, -transform.up, out hitInfo, movementSettings.distanceToGround, movementSettings.ground);
+
+        bool hit = Physics.BoxCast(transform.position, new Vector3(avgSize / 2, avgSize, avgSize / 2), -transform.up, transform.rotation,movementSettings.distanceToGround, movementSettings.ground);
+
         return hit;
     }
 
+    private bool Dash() {
+
+        if (dashInput == true) {
+            Vector3 targetPos = transform.position + cameraAnchor.forward * movementSettings.dashDistance;
+            StartCoroutine(dashing(targetPos));
+            return true;
+        }
+
+        return false;
+    }
+
+    private IEnumerator dashing(Vector3 targetPosition) {
+
+        Debug.DrawLine(transform.position, targetPosition);
+
+        const float INTERVAL = 0.05f;
+        int steps = (int)(movementSettings.dashTime / INTERVAL);
+
+        for (int i = 0; i < steps; i++) {
+            //float iFrom0to1 = (1 / steps) * i;
+
+            //Debug.Log(i + " " + iFrom0to1);
+
+            transform.position = Vector3.Lerp(transform.position, targetPosition, 0.9f);
+            yield return new WaitForSeconds(INTERVAL);
+        }
+
+    }
 
     private void OnTriggerEnter(Collider other) {
         
@@ -135,15 +175,23 @@ public class MovementSettings {
 
     public float rotateVelocity = 100;
 
+    [Header("Jumping: ")]
     public float jumpVelocity = 8;
     public float distanceToGround = 1.3f;
     public LayerMask ground = 0;
     public float lowjumpForce = 10f;
+    [Range(0f, 1f)]
+    public float lowJumpMultiplier = 0.9f;
     public float additionalFallingForce = 2f;
     [Range(0f, 1f)]
     public float jumpingMovementSpeedMultiplier = 0.5f;
     [HideInInspector]
     public float jumpingMovementSpeed = 1;
+
+    [Header("Dashing: ")]
+
+    public float dashDistance = 7f;
+    public float dashTime = 1f;
 }
 
 [System.Serializable]

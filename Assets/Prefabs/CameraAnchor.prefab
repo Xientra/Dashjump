@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 689761422725164212}
   m_Layer: 0
-  m_Name: cameraAnchor
+  m_Name: CameraAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,32 +51,32 @@ PrefabInstance:
     - target: {fileID: 1781119625958332829, guid: b7eaed47a11f34645ba784a305b6c5dc,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.5
+      value: 2.75
       objectReference: {fileID: 0}
     - target: {fileID: 1781119625958332829, guid: b7eaed47a11f34645ba784a305b6c5dc,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.5
+      value: -4
       objectReference: {fileID: 0}
     - target: {fileID: 1781119625958332829, guid: b7eaed47a11f34645ba784a305b6c5dc,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.17364816
+      value: 0.13052616
       objectReference: {fileID: 0}
     - target: {fileID: 1781119625958332829, guid: b7eaed47a11f34645ba784a305b6c5dc,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1781119625958332829, guid: b7eaed47a11f34645ba784a305b6c5dc,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1781119625958332829, guid: b7eaed47a11f34645ba784a305b6c5dc,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9848078
+      value: 0.9914449
       objectReference: {fileID: 0}
     - target: {fileID: 1781119625958332829, guid: b7eaed47a11f34645ba784a305b6c5dc,
         type: 3}
