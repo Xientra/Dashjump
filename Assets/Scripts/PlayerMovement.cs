@@ -9,9 +9,12 @@ public class PlayerMovement : MonoBehaviour {
     private Transform cameraAnchor;
     private Quaternion cameraAnchorRotationOffset = Quaternion.identity;
 
+    public Transform spawnPoint;
 
+    [Header("Settings: ")]
     public MovementSettings movementSettings;
     public InputSettings inputSettings;
+
 
     private Rigidbody playerRigidbody;
     private Vector3 velocity;
@@ -42,6 +45,13 @@ public class PlayerMovement : MonoBehaviour {
     void Start() {
         Cursor.lockState = CursorLockMode.Locked;
         cameraAnchorRotationOffset = transform.rotation;
+
+        Spawn();
+    }
+
+    public void Spawn() {
+        transform.position = spawnPoint.position;
+        transform.rotation = Quaternion.identity;
     }
 
     void Update() {
@@ -108,10 +118,11 @@ public class PlayerMovement : MonoBehaviour {
             playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, playerRigidbody.velocity.y * movementSettings.lowJumpMultiplier, playerRigidbody.velocity.z);
         }
         
-        // this is basicially additional gravity
-        if (_isGrounded == false) {
-            playerRigidbody.AddForce(-transform.up * movementSettings.additionalFallingForce);
-        }
+
+        // this is basicially additional gravity (is done with the physics component Constant Force)
+        //if (_isGrounded == false) {
+        //    playerRigidbody.AddForce(-transform.up * movementSettings.additionalFallingForce);
+        //}
 
 
         if (_isGrounded == true) {
@@ -164,8 +175,10 @@ public class PlayerMovement : MonoBehaviour {
 
     }
 
-    private void OnTriggerEnter(Collider other) {
-        
+    void OnTriggerEnter(Collider other) {
+        if (other.gameObject.tag == "Death Zone") {
+            Spawn();
+        }
     }
 }
 
