@@ -66,6 +66,7 @@ public class PlayerMovement : MonoBehaviour {
             Move();
             Jump();
         }
+
     }
 
     void GetInput() {
@@ -135,16 +136,24 @@ public class PlayerMovement : MonoBehaviour {
 
     bool IsGrounded() {
 
-        //RaycastHit hitInfo;
 
         float avgSize = ((transform.lossyScale.x + transform.lossyScale.z) / 2) * 0.9f;
-        
-        //bool hit = Physics.SphereCast(transform.position, avgSize, -transform.up, out hitInfo, movementSettings.distanceToGround, movementSettings.ground);
 
-        bool hit = Physics.BoxCast(transform.position, new Vector3(avgSize / 2, avgSize, avgSize / 2), -transform.up, transform.rotation,movementSettings.distanceToGround, movementSettings.ground);
+        Vector3 boxSize = new Vector3(avgSize / 2, movementSettings.distanceToGround, avgSize / 2);
+        bool hit = Physics.BoxCast(transform.position, boxSize / 2, -transform.up, transform.rotation, transform.lossyScale.y + boxSize.y / 2, movementSettings.ground);
 
         return hit;
     }
+
+    /*
+    private void OnDrawGizmos() {
+        float avgSize = ((transform.lossyScale.x + transform.lossyScale.z) / 2) * 0.9f;
+        Vector3 boxSize = new Vector3(avgSize, movementSettings.distanceToGround, avgSize);
+
+        Gizmos.color = new Color(1, 0, 0, 0.7f);
+        Gizmos.DrawCube(transform.position + (-transform.up * (transform.lossyScale.y + boxSize.y / 2)), boxSize);
+    }
+    */
 
     private bool Dash() {
 
@@ -175,10 +184,58 @@ public class PlayerMovement : MonoBehaviour {
 
     }
 
+    // CHANGE THIS IT'S BAD
+    private void ParentToMovingPlatform() {
+        float avgSize = ((transform.lossyScale.x + transform.lossyScale.z) / 2) * 0.9f;
+        RaycastHit[] hits = Physics.BoxCastAll(transform.position, new Vector3(avgSize / 2, avgSize, avgSize / 2), -transform.up, transform.rotation, movementSettings.distanceToGround, movementSettings.ground);
+
+        bool gotParented = false;
+        foreach (RaycastHit hit in hits) {
+            if (hit.transform.GetComponent<MovePlatform>() != null) {
+                this.transform.parent = hit.transform;
+                gotParented = true;
+            }
+        }
+        if (gotParented) {
+            this.transform.parent = null;
+        }
+    }
+
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Death Zone") {
             Spawn();
         }
+    }
+
+    private void OnTriggerExit(Collider other) {
+        
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        
+        //Debug.Log("collision enter: " + collision.transform.name);
+        if (collision.transform.GetComponent<MovePlatform>() != null) {
+            //this.transform.parent = collision.transform;
+            colLastPos = collision.transform.position;
+        }
+    }
+
+    Vector3 colLastPos;
+
+    private void OnCollisionStay(Collision collision) {
+        if (collision.transform.GetComponent<MovePlatform>() != null) {
+            transform.position += -colLastPos + collision.transform.position;
+            colLastPos = collision.transform.position;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision) {
+        /*
+        Debug.Log("collision exit: " + collision.transform.name);
+        if (transform.IsChildOf(collision.transform)) {
+            this.transform.parent = null;
+        }
+        */
     }
 }
 
