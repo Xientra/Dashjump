@@ -65,8 +65,10 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\DeathZone.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
+    <Compile Include="Assets\Scripts\ForceField.cs" />
     <Compile Include="Assets\Scripts\Platform Behaviour Scripts\MovePlatform.cs" />
     <Compile Include="Assets\Scripts\Platform Behaviour Scripts\RotatePlatform.cs" />
+    <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\SpawnPoint.cs" />
     <Compile Include="Assets\Scripts\WorldObject.cs" />
@@ -92,14 +94,14 @@
     <Reference Include="Unity.Rider.Editor">
       <HintPath>C:/_Computerstuff/Informatik - Games Engineering/EIGE - Tutorübung/Dashjump/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>C:/_Computerstuff/Informatik - Games Engineering/EIGE - Tutorübung/Dashjump/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:/_Computerstuff/Informatik - Games Engineering/EIGE - Tutorübung/Dashjump/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>C:/_Computerstuff/Informatik - Games Engineering/EIGE - Tutorübung/Dashjump/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.2D.Sprite.Editor">
-      <HintPath>C:/_Computerstuff/Informatik - Games Engineering/EIGE - Tutorübung/Dashjump/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.2.12f1/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

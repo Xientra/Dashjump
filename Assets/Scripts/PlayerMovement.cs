@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Player))]
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour {
 
+	private Player player;
+
     public Camera playerCamera;
-    private Transform cameraAnchor;
+	[HideInInspector]
+    public Transform cameraAnchor;
     private Quaternion cameraAnchorRotationOffset = Quaternion.identity;
 
-    public Transform spawnPoint;
 
     [Header("Settings: ")]
     public MovementSettings movementSettings;
@@ -20,11 +23,11 @@ public class PlayerMovement : MonoBehaviour {
     private Vector3 velocity;
     private Quaternion targetRotation;
 
-    private float forwardInput;
-    private float sidewaysInput;
-    private Vector2 turnInput;    
-    private float jumpInput;
-    private bool dashInput;
+    private float forwardInput = 0;
+    private float sidewaysInput = 0;
+    private Vector2 turnInput = Vector2.zero;    
+    private float jumpInput = 0;
+    private bool dashInput = false;
 
     // platform stuff
     private Transform platformStandingOn;
@@ -32,42 +35,26 @@ public class PlayerMovement : MonoBehaviour {
 
 
     private void Awake() {
-        velocity = Vector3.zero;
-        forwardInput = 0;
-        sidewaysInput = 0;
-        turnInput.x = 0;
-        turnInput.y = 0;
-        jumpInput = 0;
+		player = GetComponent<Player>();
+		playerRigidbody = gameObject.GetComponent<Rigidbody>();
+		if (playerCamera != null) cameraAnchor = playerCamera.transform.parent;
+		if (cameraAnchor.parent != null) cameraAnchor.SetParent(null);
 
         targetRotation = transform.rotation;
 
-        playerRigidbody = gameObject.GetComponent<Rigidbody>();
-
-        if (playerCamera != null) cameraAnchor = playerCamera.transform.parent;
-        if (cameraAnchor.parent != null) cameraAnchor.SetParent(null);
     }
 
     void Start() {
         Cursor.lockState = CursorLockMode.Locked;
         cameraAnchorRotationOffset = transform.rotation;
 
-        Spawn();
+        
     }
 
-    public void Spawn() {
-        transform.position = spawnPoint.position;
-        transform.rotation = Quaternion.identity;
-    }
 
-    public void OnDeath() {
-        Spawn();
-		
-    }
 
     void Update() {
         GetInput();
-
-        
 
         Turn();
 
@@ -82,9 +69,7 @@ public class PlayerMovement : MonoBehaviour {
 
 
             UpdatePositionBasedOnPlatform();
-
         }
-
     }
 
 
@@ -129,7 +114,7 @@ public class PlayerMovement : MonoBehaviour {
 
         // if jump is pressed player is on ground
         if (jumpInput != 0f && _isGrounded) {
-            playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, movementSettings.jumpVelocity, playerRigidbody.velocity.z);
+			performJump();
         }
         
         // this is still jumping but if jumping is not pressed add lowjumpForce
@@ -138,13 +123,6 @@ public class PlayerMovement : MonoBehaviour {
             playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, playerRigidbody.velocity.y * movementSettings.lowJumpMultiplier, playerRigidbody.velocity.z);
         }
         
-
-        // this is basicially additional gravity (is done with the physics component Constant Force)
-        //if (_isGrounded == false) {
-        //    playerRigidbody.AddForce(-transform.up * movementSettings.additionalFallingForce);
-        //}
-
-
         if (_isGrounded == true) {
             movementSettings.jumpingMovementSpeed = 1;
         }
@@ -153,8 +131,15 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
-    bool IsGrounded() {
+	public void performJump() {
+		performJump(1);
+	}
 
+	public void performJump(float jumpVelMultiplier) {
+		playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, movementSettings.jumpVelocity * jumpVelMultiplier, playerRigidbody.velocity.z);
+	}
+
+    bool IsGrounded() {
 
         float avgSize = ((transform.lossyScale.x + transform.lossyScale.z) / 2) * 0.9f;
 
@@ -205,7 +190,7 @@ public class PlayerMovement : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Death Zone") {
-            Spawn();
+            player.Spawn();
         }
     }
 
@@ -214,22 +199,6 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
-
-        if (collision.gameObject.tag == "Enemy") {
-			Enemy enemy = collision.gameObject.GetComponent<Enemy>();
-			Collider col = collision.gameObject.GetComponent<Collider>();
-			Collider mycol = this.gameObject.GetComponent<Collider>();
-
-			if (mycol.bounds.center.y - mycol.bounds.extents.y > col.bounds.center.y + 0.5f * col.bounds.extents.y) {
-
-				// add enemy.bumpSpeed to player
-				playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, enemy.bumpSpeed, playerRigidbody.velocity.z);
-
-				// kill enemy
-				enemy.OnDeath();
-			}
-		}
-
 
 		if (collision.transform.GetComponent<MovePlatform>() != null) {
             //Debug.Log("collision enter: " + collision.transform.name);

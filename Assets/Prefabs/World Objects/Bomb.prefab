@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2870959605442175553}
   - component: {fileID: 3853363812488988452}
   - component: {fileID: 5387796612292082693}
-  - component: {fileID: 8292077609586188397}
+  - component: {fileID: 7010396154567872671}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4605885546503493277}
   m_LocalRotation: {x: 0, y: 0.5, z: -0, w: -0.8660254}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
@@ -93,7 +93,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.1
-  m_Center: {x: 0.025, y: -0.025, z: 0}
+  m_Center: {x: 0.022, y: -0.024, z: 0}
 --- !u!54 &5387796612292082693
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -110,7 +110,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 64
   m_CollisionDetection: 0
---- !u!114 &8292077609586188397
+--- !u!114 &7010396154567872671
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,3 +123,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0
+  bumpSpeed: 1
