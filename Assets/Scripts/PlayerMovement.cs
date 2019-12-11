@@ -26,6 +26,11 @@ public class PlayerMovement : MonoBehaviour {
     private float jumpInput;
     private bool dashInput;
 
+    // platform stuff
+    private Transform platformStandingOn;
+    private Vector3 colLastPos;
+
+
     private void Awake() {
         velocity = Vector3.zero;
         forwardInput = 0;
@@ -54,8 +59,16 @@ public class PlayerMovement : MonoBehaviour {
         transform.rotation = Quaternion.identity;
     }
 
+    public void OnDeath() {
+        Spawn();
+		
+    }
+
     void Update() {
         GetInput();
+
+        
+
         Turn();
 
         UpdateCameraAnchor();
@@ -63,11 +76,17 @@ public class PlayerMovement : MonoBehaviour {
 
     void FixedUpdate() {
         if (Dash() == false) {
+
             Move();
             Jump();
+
+
+            UpdatePositionBasedOnPlatform();
+
         }
 
     }
+
 
     void GetInput() {
         if (inputSettings.FORWARD_AXIS.Length != 0) forwardInput = Input.GetAxis(inputSettings.FORWARD_AXIS);
@@ -184,23 +203,6 @@ public class PlayerMovement : MonoBehaviour {
 
     }
 
-    // CHANGE THIS IT'S BAD
-    private void ParentToMovingPlatform() {
-        float avgSize = ((transform.lossyScale.x + transform.lossyScale.z) / 2) * 0.9f;
-        RaycastHit[] hits = Physics.BoxCastAll(transform.position, new Vector3(avgSize / 2, avgSize, avgSize / 2), -transform.up, transform.rotation, movementSettings.distanceToGround, movementSettings.ground);
-
-        bool gotParented = false;
-        foreach (RaycastHit hit in hits) {
-            if (hit.transform.GetComponent<MovePlatform>() != null) {
-                this.transform.parent = hit.transform;
-                gotParented = true;
-            }
-        }
-        if (gotParented) {
-            this.transform.parent = null;
-        }
-    }
-
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Death Zone") {
             Spawn();
@@ -212,30 +214,93 @@ public class PlayerMovement : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
-        
-        //Debug.Log("collision enter: " + collision.transform.name);
-        if (collision.transform.GetComponent<MovePlatform>() != null) {
+
+        if (collision.gameObject.tag == "Enemy") {
+			Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+			Collider col = collision.gameObject.GetComponent<Collider>();
+			Collider mycol = this.gameObject.GetComponent<Collider>();
+
+			if (mycol.bounds.center.y - mycol.bounds.extents.y > col.bounds.center.y + 0.5f * col.bounds.extents.y) {
+
+				// add enemy.bumpSpeed to player
+				playerRigidbody.velocity = new Vector3(playerRigidbody.velocity.x, enemy.bumpSpeed, playerRigidbody.velocity.z);
+
+				// kill enemy
+				enemy.OnDeath();
+			}
+		}
+
+
+		if (collision.transform.GetComponent<MovePlatform>() != null) {
+            //Debug.Log("collision enter: " + collision.transform.name);
+
             //this.transform.parent = collision.transform;
-            colLastPos = collision.transform.position;
+
+            //platformStandingOn = collision.transform;
+            //colLastPos = collision.transform.position;
+
         }
     }
 
-    Vector3 colLastPos;
 
     private void OnCollisionStay(Collision collision) {
+        /*
         if (collision.transform.GetComponent<MovePlatform>() != null) {
             transform.position += -colLastPos + collision.transform.position;
             colLastPos = collision.transform.position;
         }
+        */
     }
 
     private void OnCollisionExit(Collision collision) {
+        
         /*
-        Debug.Log("collision exit: " + collision.transform.name);
         if (transform.IsChildOf(collision.transform)) {
             this.transform.parent = null;
         }
+        transform.parent = null;
         */
+        
+        /*
+        if (platformStandingOn != null) {
+            //Debug.Log("collision exit: " + collision.transform.name);
+            platformStandingOn = null;
+        }
+        platformStandingOn = null;
+        */
+    }
+
+    private void UpdatePositionBasedOnPlatform() {
+        Debug.Log(platformStandingOn);
+        platformStandingOn = CheckForPlatform();
+
+
+
+        if (platformStandingOn != null) {
+            if ((-colLastPos + platformStandingOn.position).magnitude > 1) {
+                colLastPos = platformStandingOn.position;
+            }
+
+            transform.position += -colLastPos + platformStandingOn.position;
+            colLastPos = platformStandingOn.position;
+        }
+    }
+
+    // still suboptimal!!!
+    private Transform CheckForPlatform() {
+
+        float avgSize = ((transform.lossyScale.x + transform.lossyScale.z) / 2) * 0.9f;
+        RaycastHit[] hits = Physics.BoxCastAll(transform.position, new Vector3(avgSize / 2, avgSize, avgSize / 2), -transform.up, transform.rotation, movementSettings.distanceToGround, movementSettings.ground);
+
+        Transform result = null;
+
+        foreach (RaycastHit hit in hits) {
+            if (hit.transform.GetComponent<MovePlatform>() != null) {
+                result = hit.transform;
+            }
+        }
+
+        return result;
     }
 }
 
