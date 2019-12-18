@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(StayOnPlatform))]
 [RequireComponent(typeof(Player))]
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour {
@@ -33,6 +34,8 @@ public class PlayerMovement : MonoBehaviour {
     private Transform platformStandingOn;
     private Vector3 colLastPos;
 
+	private StayOnPlatform stayOnPlatform;
+
 
     private void Awake() {
 		player = GetComponent<Player>();
@@ -42,6 +45,9 @@ public class PlayerMovement : MonoBehaviour {
 
         targetRotation = transform.rotation;
 
+		stayOnPlatform = GetComponent<StayOnPlatform>();
+		stayOnPlatform.ground = movementSettings.ground;
+		stayOnPlatform.distanceToGround = movementSettings.distanceToGround;
     }
 
     void Start() {
@@ -51,7 +57,7 @@ public class PlayerMovement : MonoBehaviour {
         
     }
 
-
+	// strg + k + d code convertierung
 
     void Update() {
         GetInput();
@@ -68,7 +74,7 @@ public class PlayerMovement : MonoBehaviour {
             Jump();
 
 
-            UpdatePositionBasedOnPlatform();
+            //UpdatePositionBasedOnPlatform();
         }
     }
 

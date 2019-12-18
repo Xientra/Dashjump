@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class ForceField : MonoBehaviour {
+public class ForcePush : MonoBehaviour {
 
 	public bool active = true;
 	public float timeActive = 0.5f;

@@ -20,6 +20,7 @@ public class WorldObject : MonoBehaviour {
 			originPoint = new GameObject("originPoint point of: " + gameObject.name).transform;
 			originPoint.position = transform.position;
 			originPoint.rotation = transform.rotation;
+			originPoint.SetParent(this.transform.parent);
 		}
 	}
 

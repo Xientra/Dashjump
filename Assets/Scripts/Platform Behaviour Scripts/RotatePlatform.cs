@@ -13,7 +13,7 @@ public class RotatePlatform : MonoBehaviour {
         originalRotation = transform.rotation;
     }
 
-    void Update() {
+    void FixedUpdate() {
         Rotate();
     }
 

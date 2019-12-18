@@ -65,12 +65,15 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\DeathZone.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
-    <Compile Include="Assets\Scripts\ForceField.cs" />
+    <Compile Include="Assets\Scripts\Force Scripts\ForceField.cs" />
+    <Compile Include="Assets\Scripts\Force Scripts\ForcePush.cs" />
+    <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\Platform Behaviour Scripts\MovePlatform.cs" />
     <Compile Include="Assets\Scripts\Platform Behaviour Scripts\RotatePlatform.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\SpawnPoint.cs" />
+    <Compile Include="Assets\Scripts\StayOnPlatform.cs" />
     <Compile Include="Assets\Scripts\WorldObject.cs" />
     <None Include="Assets\Import\Powerups Unity Package\PowerUps Vol 1 Free\Readme.txt" />
     <Reference Include="Unity.Timeline.Editor">
