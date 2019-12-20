@@ -62,13 +62,14 @@ public class PlayerMovement : MonoBehaviour {
     void Update() {
         GetInput();
 
-        Turn();
-
-        UpdateCameraAnchor();
-    }
+		UpdateCameraAnchor();
+	}
 
     void FixedUpdate() {
-        if (Dash() == false) {
+
+		Turn();
+
+		if (Dash() == false) {
 
             Move();
             Jump();
@@ -76,7 +77,9 @@ public class PlayerMovement : MonoBehaviour {
 
             //UpdatePositionBasedOnPlatform();
         }
-    }
+
+		UpdateCameraAnchor();
+	}
 
 
     void GetInput() {

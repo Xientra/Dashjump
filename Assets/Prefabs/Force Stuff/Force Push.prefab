@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8690462994863700419}
   - component: {fileID: 3829865731454981818}
   m_Layer: 0
-  m_Name: Force Field
+  m_Name: Force Push
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -134,21 +134,6 @@ PrefabInstance:
         type: 3}
       propertyPath: TrailModule.colorOverTrail.maxColor.a
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5694037964429013910, guid: 83d8af2f64fc08d40bca91158e30e705,
-        type: 3}
-      propertyPath: InitialModule.startColor.maxColor.r
-      value: 0.27429688
-      objectReference: {fileID: 0}
-    - target: {fileID: 5694037964429013910, guid: 83d8af2f64fc08d40bca91158e30e705,
-        type: 3}
-      propertyPath: InitialModule.startColor.maxColor.g
-      value: 0.7283546
-      objectReference: {fileID: 0}
-    - target: {fileID: 5694037964429013910, guid: 83d8af2f64fc08d40bca91158e30e705,
-        type: 3}
-      propertyPath: InitialModule.startColor.maxColor.b
-      value: 0.8679245
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83d8af2f64fc08d40bca91158e30e705, type: 3}
