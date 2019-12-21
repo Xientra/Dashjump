@@ -39,7 +39,7 @@ public class Player : MonoBehaviour {
 
 	private void Shoot() {
 		if (Input.GetMouseButtonDown(1)) {
-			GameObject shootFx = Instantiate(forcePushPrefab, transform.position, playerMovement.cameraAnchor.rotation * Quaternion.Inverse(playerMovement.playerCamera.transform.localRotation));
+			GameObject shootFx = Instantiate(forcePushPrefab, transform.position, playerMovement.cameraAnchor.rotation); //* Quaternion.Inverse(playerMovement.playerCamera.transform.localRotation)
 			Destroy(shootFx, 5f);
 		}
 		if (Input.GetMouseButtonDown(0)) {
